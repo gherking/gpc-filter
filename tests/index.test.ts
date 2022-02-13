@@ -69,7 +69,7 @@ describe("Filter", () => {
             expect(() => new Filter({
                 includeScenarioTags: ["current", "wip", "empty"],
                 excludeScenarioTags: ["current", "wip"],
-            })).toThrow("The following tag(s) are present as both incusion and exclusion: current,wip")
+            })).toThrow("The following tag(s) are present as both inclusion and exclusion: current,wip")
         });
     });
 
@@ -121,7 +121,7 @@ describe("Filter", () => {
             expect(() => new Filter({
                 includeRuleTags: ["current", "wip", "empty"],
                 excludeRuleTags: ["current", "wip"],
-            })).toThrow("The following tag(s) are present as both incusion and exclusion: current,wip")
+            })).toThrow("The following tag(s) are present as both inclusion and exclusion: current,wip")
         });
     });
 
