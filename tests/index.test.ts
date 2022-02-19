@@ -71,6 +71,13 @@ describe("Filter", () => {
                 excludeScenarioTags: ["current", "wip"],
             })).toThrow("The following tag(s) are present as both inclusion and exclusion: current,wip")
         });
+
+        test("should be able to filter out feature", async () => {
+            const actual = pruneID(process(base, new Filter({
+                includeScenarioTags: ["nonExistent"],
+            }))) as Document[];
+            expect(actual).toHaveLength(0);
+        });
     });
 
     describe("Rule", () => {
@@ -123,7 +130,5 @@ describe("Filter", () => {
                 excludeRuleTags: ["current", "wip"],
             })).toThrow("The following tag(s) are present as both inclusion and exclusion: current,wip")
         });
-    });
-
-    
+    });    
 });

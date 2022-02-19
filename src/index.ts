@@ -1,7 +1,7 @@
 'use strict';
 
 import { PreCompiler } from "gherking";
-import { Scenario, ScenarioOutline, Examples, Tag, Rule } from "gherkin-ast";
+import { Scenario, ScenarioOutline, Examples, Tag, Rule, Element, Feature } from "gherkin-ast";
 import { FilterConfig } from "./types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require("debug")("gpc:filter");
@@ -56,6 +56,20 @@ class Filter implements PreCompiler {
             }    
         }
         return rule;
+    }
+
+    postRule(rule: Rule) {
+        if (rule.elements.length && rule.elements.some((element: Element) => element.keyword === "Scenario" || element.keyword === "Scenario Outline")) {
+            return true;
+        }
+        return false;
+    }
+
+    postFeature(feature: Feature) {        
+        if (feature.elements.length && feature.elements.some((element: Element) => element.keyword === "Scenario" || element.keyword === "Scenario Outline" || element.keyword === "Rule")) {
+            return true;
+        }
+        return false;
     }
 
     onScenario(scenario: Scenario): Scenario {
