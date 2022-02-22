@@ -56,7 +56,9 @@ The precompiler accepts the following configuration:
 | `excludeRuleTags` | `Array` | Rules with the given tag and all their elements will be excluded from the result | Optional |
 
 ## Example
-Excluding scenarios with @wip tag
+Excluding scenarios with @wip or @exclude tags
+
+config = {filter: "@current"}
 
 ```@wip
 Scenario: One tag

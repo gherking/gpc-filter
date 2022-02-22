@@ -58,7 +58,8 @@
   "dependencies": {
     "debug": "^4.3.1",
     "gherkin-ast": "^3.2.1",
-    "gherking": "^2.0.0"
+    "gherking": "^2.0.0",
+    "cucumber-tag-expressions": "^2.0.3"
   },
   "jest": {
     "reporters": [
