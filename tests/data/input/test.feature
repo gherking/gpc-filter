@@ -68,7 +68,6 @@ Scenario Outline: Both tags one examples
         | both tags column |
         | both tags row    |
 
-
 Scenario Outline: Multiple tags in multiple examples
     Given A scenarioOutline with tags in multiple examples is created
     When this Scenario Outline is compiled

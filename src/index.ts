@@ -2,14 +2,11 @@
 
 import { PreCompiler } from "gherking";
 import { Scenario, ScenarioOutline, Examples, Rule, Element, Feature, Tag } from "gherkin-ast";
-import { FilterConfig } from "./types";
 import parse from 'cucumber-tag-expressions'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const debug = require("debug")("gpc:filter");
 
-const DEFAULT_CONFIG: FilterConfig = {
-    filter: "not @wip"
-}
+const DEFAULT_CONFIG: string = "not @wip";
 
 const tagsToString = (tags: Tag[]) => {
     if (tags && tags.length) {
@@ -19,78 +16,57 @@ const tagsToString = (tags: Tag[]) => {
 }
 
 class Filter implements PreCompiler {
-    private config: FilterConfig;
-    private parsedFilter;
+    private filter;
     private featureTags: Tag[];
-    private ruleTags: Tag[];
-    constructor(config?: FilterConfig) {
-        this.config = {
-            ...DEFAULT_CONFIG,
-            ...(config || {}),
-        };
-        this.parsedFilter = parse(this.config.filter);
+    constructor(config?: string) {
+        this.filter = config? parse(config) : parse(DEFAULT_CONFIG);
         debug("Intializing Filter, config: %o", config);
     }
 
     preFeature(feature: Feature) {
         this.featureTags = feature.tags;
+        debug("Storing feature tags: %o", this.featureTags)
         return true;
     }
 
-    preRule(rule: Rule) {
-        this.ruleTags = rule.tags;
-        return true
-    }
-
-    preScenario(scenario: Scenario, parent: Feature | Rule): boolean {   
+    preScenario(scenario: Scenario, parent: Feature | Rule): boolean {
+        debug("Gathering tags of Scenario: %s", scenario.name);   
         let tags = tagsToString(scenario.tags)
-                        .concat(tagsToString(this.featureTags));                       
-        if (parent instanceof Rule) {
-           tags = tags.concat(tagsToString(parent.tags));
-        }
+                        .concat(tagsToString(this.featureTags))
+                        .concat(tagsToString(parent.tags));
+        debug("The tags are: %o", tags)
 
-        return this.parsedFilter.evaluate(tags);
+        return this.filter.evaluate(tags);
     }
 
-    preScenarioOutline(scenarioOutline: ScenarioOutline, parent: Feature | Rule): boolean {
+    preScenarioOutline(scenarioOutline: ScenarioOutline, parent: Rule | Feature): boolean {
+        debug("Gathering tags of Scenario Outline: %s", scenarioOutline.name);
         scenarioOutline.examples = scenarioOutline.examples.filter((example: Examples) => {
+            debug("Gathering tags of example: %o", example.header)
             const exampleTags = tagsToString(example.tags)
                         .concat(tagsToString(scenarioOutline.tags))
-                        .concat(tagsToString(this.ruleTags))
+                        .concat(tagsToString(parent.tags))
                         .concat(tagsToString(this.featureTags));
-            return this.parsedFilter.evaluate(exampleTags);
+            debug("The tags are: %o", exampleTags)
+            return this.filter.evaluate(exampleTags);
         });
-        if (!scenarioOutline.examples.length) {
-            return false;
-        }  
-        let tags = tagsToString(scenarioOutline.tags)
-                        .concat(tagsToString(this.featureTags));
         
-        for (const example of scenarioOutline.examples) {
-            tags = tags.concat(tagsToString(example.tags));
-        }
-        if (parent instanceof Rule) {
-            tags = tags.concat(tagsToString(parent.tags));
-        }
-
-        return this.parsedFilter.evaluate(tags);
+        return !!scenarioOutline.examples.length;
     }
 
     postRule(rule: Rule): boolean {
-        if (rule.elements.length && rule.elements.some((element: Element) => element.keyword === "Scenario" || element.keyword === "Scenario Outline")) {
-            return true;
-        }
-        return false;
+        debug("Checking remaining element of Rule %s", rule.name)
+        return (rule.elements.length && rule.elements.some((element: Element) => 
+            element instanceof Scenario || element instanceof ScenarioOutline)
+        );
     }
 
     postFeature(feature: Feature): boolean {
-        if (feature.elements.length && feature.elements.some((element: Element) => 
-         element.keyword === "Scenario"
-         || element.keyword === "Scenario Outline"
-         || element.keyword === "Rule")) {
-            return true;
-        }
-        return false;
+        debug("Checking remaining elements of Feature %s", feature.name)
+        return (feature.elements.length && feature.elements.some((element: Element) => 
+         element instanceof Scenario
+         || element instanceof ScenarioOutline
+         || element instanceof Rule)) 
     }
 }
 

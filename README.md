@@ -48,17 +48,14 @@ await save('./features/dist/login.feature', ast, {
 
 The precompiler accepts the following configuration:
 
-| Option | Type | Description | Necessity |
-|:------:|:----:|:------------|:----------|
-| `includeScenarioTags` | `Array` | Scenarios with the given tag will be included in the result | Optional |
-| `excludeScenarioTags` | `Array` | Scenarios with the given tag will be excluded from the result | Optional |
-| `includeRuleTags` | `Array` | Rules with the given tag will be included in the result | Optional |
-| `excludeRuleTags` | `Array` | Rules with the given tag and all their elements will be excluded from the result | Optional |
+| Type | Description | Necessity | Default value |
+|:----:|:------------|:----------|:--------------|
+| `string` | Cucumber-tag-expression the filtering is based on | Optional | `not @wip` |
 
 ## Example
-Excluding scenarios with @wip or @exclude tags
+Keeping elements with @current tag
 
-config = {filter: "@current"}
+new Filter("@current")
 
 ```@wip
 Scenario: One tag
@@ -71,6 +68,25 @@ Scenario: Another tag
     Given A scenario with another tag is created
     When this Scenario is compiled
     Then something should happen
+
+Scenario Outline: Multiple tags in multiple examples
+    Given A scenarioOutline with tags in multiple examples is created
+    When this Scenario Outline is compiled
+    Then something should happen
+
+    Examples:
+        | multiple examples no tag column |
+        | multiple examples no tag row    | 
+        
+    @wip    
+    Examples:
+        | multiple examples one tag column |
+        | multiple examples one tag row    |
+
+    @current
+    Examples:
+        | multiple examples other tag column |
+        | multiple examples other tag row    |
 ```
 
 Will be processed into:
@@ -81,6 +97,16 @@ Scenario: Another tag
     Given A scenario with another tag is created
     When this Scenario is compiled
     Then something should happen
+
+Scenario Outline: Multiple tags in multiple examples
+    Given A scenarioOutline with tags in multiple examples is created
+    When this Scenario Outline is compiled
+    Then something should happen
+
+    @current
+    Examples:
+        | multiple examples other tag column |
+        | multiple examples other tag row    |
 ```
 
 ## Other
