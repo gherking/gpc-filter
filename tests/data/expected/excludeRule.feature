@@ -1,31 +1,5 @@
 Feature: Test
 
-@Rule
-Rule: Rule with rule1 tag
-
-Scenario: No tags
-    Given A scenario without tags is created
-    When this Scenario is compiled
-    Then something should happen
-
-@wip
-Scenario: One tag
-    Given A scenario with one tag is created
-    When this Scenario is compiled
-    Then something should happen
-
-@current
-Scenario: Another tag
-    Given A scenario with another tag is created
-    When this Scenario is compiled
-    Then something should happen
-
-@wip @current
-Scenario: Both tags
-    Given A scenario both tags is created
-    When this Scenario is compiled
-    Then something should happen
-
 @Rule2
 Rule: Rule with rule2 tag
 
@@ -67,6 +41,7 @@ Scenario Outline: Both tags one examples
     Examples:
         | both tags column |
         | both tags row    |
+
 
 Scenario Outline: Multiple tags in multiple examples
     Given A scenarioOutline with tags in multiple examples is created
