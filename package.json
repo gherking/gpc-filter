@@ -1,6 +1,6 @@
 {
   "name": "gpc-filter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The Filter precompiler is responsible for including or excluding the elements of a feature file in the result, which match a cucumber-tag-expression (e.g., has a given tag, does not have a given tag)",
   "main": "index.js",
   "types": "index.d.ts",
